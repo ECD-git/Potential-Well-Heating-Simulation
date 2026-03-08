@@ -29,7 +29,7 @@ float stopTime = 20; //[s] //Overall Length of sim (will be rounded if not divis
 int N_t = std::round(stopTime/timeStep); // number of time steps
 // vectors for storing positions and velocity
 /* storing in the form (a,v,x):
-calc each step in order a -> v -> x
+calc each step in order v -> x -> a
 take 1/2 of each velocity index to get acc value
 */
 std::vector<float> X;
@@ -114,49 +114,34 @@ float Pendulum_Potential(float x)
 // MAIN
 int main()
 {
-    // define i=0 positions from initials
-    X.push_back(x_0);
-    V.push_back(v_0);
-    int x_hat = 1; // inital velocity is to the right
-
-    //for (int i=1; i<N_t; i++)
-    //{
-    //
-    //}
-    /*
-    //open file write our initials 
+    // open results file
     std::ofstream result;
     result.open("results.dat");
 
-    result<<time<<','<<KE<<'\n';
+    // define i=0 positions from initials
+    X.push_back(x_0);
+    V.push_back(v_0);
+    A.push_back(Pendulum_Force(X[0])/M);
 
-    while(time < stopTime)
-    {   
-        x += v*timeStep; // new x pos
-        // check if out of bounds
-        if (x < 0)
-        {
-            x = x*-1;
-            i = 1; // vel to the right
-        }
-        if (x > wellLength)
-        {
-            x = 2*wellLength - x;
-            i = -1; // vel to the left
-        } 
-        KE = ET - Bump_Potential(x,time);
-        v = Vel_Conv(KE)*i;
-        // work out new KE and export result
-        
-        result<<time<<','<<KE<<'\n';
+    // push initial time and KE
+    result<<0<<','<<KE_Conv(V[0])<<'\n';
 
-        // update velocity and time
-        time += timeStep;
-        std::cout<<x<<','<<v<<','<<time<<'\n';
-    };
+    for (int i=1; i<N_t; i++)
+    {
+    // time = i * timestep
+    float v_i = V[i-1] + A[i-1]*timeStep;
+    V.push_back(v_i);
+    float x_i = X[i-1] + V[i]*timeStep;
+    X.push_back(x_i);
+    float a_i = Pendulum_Force(X[i])/M;
+    A.push_back(a_i);
 
+    // push back resulting ke and time from this step
+    result<<i*timeStep<<','<<KE_Conv(V[i])<<'\n';
+    // Loop back around
+    }
+    
     result.close();
-    */
     std::cout<<"EXECUTE SUCESSFUL";
     return 0;
 }
