@@ -27,6 +27,14 @@ float springK = 0.01; // [N/m]
 float timeStep = 0.01; //[s]
 float stopTime = 20; //[s] //Overall Length of sim (will be rounded if not divisible)
 int N_t = std::round(stopTime/timeStep); // number of time steps
+// vectors for storing positions and velocity
+/* storing in the form (a,v,x):
+calc each step in order a -> v -> x
+take 1/2 of each velocity index to get acc value
+*/
+std::vector<float> X;
+std::vector<float> V;
+std::vector<float> A;
 
 // USEFUL FUNCTIONS
 float KE_Conv(float v)
@@ -56,13 +64,28 @@ float Bump_Potential(float x, float time)
     /* Potential function for a confined bump over place in the middle of a well
     modelled as a abs(cos(X) - 1) function for a smooth transition to the flat well
     then off set by a cos(omega t) to oscillate the bump up and down
-    PE = A/2|(cos(pi/l * x)-1)|*cos(omega*t) */
+    PE = A/2(cos(pi/l * x)-1)*cos(omega*t) */
     // THIS POTENTIAL IS SYMMETRIC, CAN USE PERIODIC BOUNDARY CONDS
     // check if over bump
     if (x > bumpPos && x < bumpPos + bumpLength)
     {
         std::cout<<"Over bump ";
-        return Kel_E_Conv(bumpAmp)*std::abs(std::cos((M_PI/bumpLength)*(x-bumpPos))-1)*std::cos(bumpOmega*time);
+        return Kel_E_Conv(bumpAmp)*0.5*(std::cos((M_PI/bumpLength)*(x-bumpPos))-1)*std::cos(bumpOmega*time + bumpPhase);
+    }
+    else
+    {
+        return 0;
+    }
+}
+float Bump_Force(float x, float time)
+{
+    /*
+    Force version of the bump potential, just the derivative F = -dU/dx
+    */
+    if (x > bumpPos && x < bumpPos + bumpLength)
+    {
+        std::cout<<"Over bump ";
+        return Kel_E_Conv(bumpAmp)*(M_PI/bumpLength)*0.5*std::sin((M_PI/bumpLength)*(x-bumpPos))*std::cos(bumpOmega*time + bumpPhase);
     }
     else
     {
@@ -75,6 +98,7 @@ float Pendulum_Force(float x)
     Models the force experienced in a PE = 1/2kx^2 potential
     F = -kx
     Offset by half the length of the well so its centered
+    this potential is also symmetric -> periodic conditions
     */
    return -1*springK*(x-(wellLength*0.5));
 }
@@ -87,18 +111,18 @@ float Pendulum_Potential(float x)
    return 0.5*springK*pow(x-(wellLength*0.5),2);
 }
 
-
 // MAIN
 int main()
 {
     // define i=0 positions from initials
-    float time = 0;
-    float x = x_0;
-    float v = v_0;
-    int i = 1; // inital velocity is to the right
-    float KE = KE_Conv(v_0); // init KE [j]
-    float ET = KE + Bump_Potential(x,time); //[J] Get E_total at x_0 and time=0
+    X.push_back(x_0);
+    V.push_back(v_0);
+    int x_hat = 1; // inital velocity is to the right
 
+    //for (int i=1; i<N_t; i++)
+    //{
+    //
+    //}
     /*
     //open file write our initials 
     std::ofstream result;
