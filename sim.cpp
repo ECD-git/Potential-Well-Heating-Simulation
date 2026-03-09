@@ -1,15 +1,10 @@
-/*
-TODO:
-    - convert bump potential to a force
-*/
-
 #include<iostream>
 #include<cmath>
 #include<vector>
 #include<fstream>
 
 // Particle definitions and initials
-float v_0 = 0.1; //[m/s] 
+float v_0 = 4; //[m/s] // 4ms corresponds to about 1 milikelvin
 float M = 1.00784*1.66*pow(10,-27); //[kg] //using atomic mass of H
 float x_0 = 0; //[m] //particle starts at far left side 
 // well definitions 
@@ -22,10 +17,10 @@ float bumpPos = (wellLength/2) - (bumpLength/2); //[m] //places bump in middle
 float bumpOmega = 0.5*(M_PI*v_0/wellLength); // [rad/s] //driving frequency of potential 'bump'
 float bumpPhase = M_PI; //[rads]
 // Spring Potential Consts
-float springK = 0.01; // [N/m]  
+float springK = 0.01*pow(10,-30); // [N/m]  
 // time step and sim length
-float timeStep = 0.01; //[s]
-float stopTime = 20; //[s] //Overall Length of sim (will be rounded if not divisible)
+float timeStep = 0.001; //[s]
+float stopTime = 5; //[s] //Overall Length of sim (will be rounded if not divisible)
 int N_t = std::round(stopTime/timeStep); // number of time steps
 // vectors for storing positions and velocity
 /* storing in the form (a,v,x):
@@ -132,15 +127,22 @@ int main()
     float v_i = V[i-1] + A[i-1]*timeStep;
     V.push_back(v_i);
     float x_i = X[i-1] + V[i]*timeStep;
+    // check if out of bounds and loop back around
+    // THIS IS ASSUMING SYMMETRIC POTENTIAL
+    if(x_i >= wellLength)
+    {
+        x_i = x_i - wellLength;
+    }
     X.push_back(x_i);
     float a_i = Pendulum_Force(X[i])/M;
     A.push_back(a_i);
 
     // push back resulting ke and time from this step
     result<<i*timeStep<<','<<KE_Conv(V[i])<<'\n';
-    // Loop back around
-    }
     
+    
+    }
+
     result.close();
     std::cout<<"EXECUTE SUCESSFUL";
     return 0;
