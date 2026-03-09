@@ -14,3 +14,11 @@ $$
 where $x,v,a$ are the position, velocity and acceleration of the particle in one dimension, $U$ is the potential the particle is under and $\Delta t$ is the time step of the simulation.
 
 Simulation done in C++ with results plotted in Python (No technical reason just good for practicing both)
+
+---
+
+### Spring Potential (Static) Test:
+$$F = -kx, \hspace{1cm}\phi = \frac{1}{2}kx^2.$$
+Resulting kinetic energy graph and $\Delta t = 0.0001\text{s}$ and $T = 1\text{s}$.
+![[SpringPotentialStatic-1second-0.0001.png]]
+Shows energy conservation, oscillating back and forth over a potential proportional to $x^2$.
