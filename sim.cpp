@@ -3,33 +3,7 @@
 #include<vector>
 #include<fstream>
 
-// Particle definitions and initials
-float v_0 = 4; //[m/s] // 4ms corresponds to about 1 milikelvin
 float M = 1.00784*1.66*pow(10,-27); //[kg] //using atomic mass of H
-float x_0 = 0; //[m] //particle starts at far left side 
-// well definitions 
-float wellLength = 0.25; //[m]
-float wellDepth = 0.5; // [kelvin]
-// bump consts
-float bumpAmp = 0.0000001; // [kelvin]
-float bumpLength = 0.05; //[m]
-float bumpPos = (wellLength/2) - (bumpLength/2); //[m] //places bump in middle
-float bumpOmega = 0.5*(M_PI*v_0/wellLength); // [rad/s] //driving frequency of potential 'bump'
-float bumpPhase = M_PI; //[rads]
-// Spring Potential Consts
-float springK = 0.01*pow(10,-30); // [N/m]  
-// time step and sim length
-float timeStep = 0.001; //[s]
-float stopTime = 5; //[s] //Overall Length of sim (will be rounded if not divisible)
-int N_t = std::round(stopTime/timeStep); // number of time steps
-// vectors for storing positions and velocity
-/* storing in the form (a,v,x):
-calc each step in order v -> x -> a
-take 1/2 of each velocity index to get acc value
-*/
-std::vector<float> X;
-std::vector<float> V;
-std::vector<float> A;
 
 // USEFUL FUNCTIONS
 float KE_Conv(float v)
@@ -52,6 +26,39 @@ float Kel_E_Conv(float K)
     // converts a temperature [K] to an energy [J]
     return 1.380649*pow(10, -23)*K;
 }
+float E_Kel_Conv(float E)
+{
+    return E/(1.380649*pow(10, -23));
+}
+
+// Particle definitions and initials
+float K_i = 0.001; // kelvin
+float v_0 = Vel_Conv(Kel_E_Conv(K_i)); //[m/s] // 4ms corresponds to about 1 milikelvin
+float x_0 = 0; //[m] //particle starts at far left side 
+// well definitions 
+float wellLength = 0.25; //[m]
+float wellDepth = 0.5; // [kelvin]
+// bump consts
+float bumpAmp = 0.0005; // [kelvin]
+float bumpLength = 0.05; //[m]
+float bumpPos = (wellLength/2) - (bumpLength/2); //[m] //places bump in middle
+float bumpOmega = 0.5*(M_PI*v_0/wellLength); // [rad/s] //driving frequency of potential 'bump'
+float bumpPhase = M_PI; //[rads]
+// Spring Potential Consts
+float springPEMax = 0.0005; // Kelvin, this is the max value of the potential in the well
+float springK = 2*Kel_E_Conv(springPEMax)/pow(wellLength/2,2); // [N/m]  
+// time step and sim length
+float timeStep = 0.0001; //[s]
+float stopTime = 1; //[s] //Overall Length of sim (will be rounded if not divisible)
+int N_t = std::round(stopTime/timeStep); // number of time steps
+// vectors for storing positions and velocity
+/* storing in the form (a,v,x):
+calc each step in order v -> x -> a
+take 1/2 of each velocity index to get acc value
+*/
+std::vector<float> X;
+std::vector<float> V;
+std::vector<float> A;
 
 // Potential/force functions
 float Bump_Potential(float x, float time)
@@ -119,7 +126,7 @@ int main()
     A.push_back(Pendulum_Force(X[0])/M);
 
     // push initial time and KE
-    result<<0<<','<<KE_Conv(V[0])<<'\n';
+    result<<0<<','<<E_Kel_Conv(KE_Conv(V[0]))<<'\n';
 
     for (int i=1; i<N_t; i++)
     {
@@ -132,13 +139,14 @@ int main()
     if(x_i >= wellLength)
     {
         x_i = x_i - wellLength;
+        result<<"Bounce Back ";
     }
     X.push_back(x_i);
     float a_i = Pendulum_Force(X[i])/M;
     A.push_back(a_i);
 
     // push back resulting ke and time from this step
-    result<<i*timeStep<<','<<KE_Conv(V[i])<<'\n';
+    result<<i*timeStep<<','<<E_Kel_Conv(KE_Conv(V[i]))<<'\n';
     
     
     }
