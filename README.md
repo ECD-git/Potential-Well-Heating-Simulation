@@ -13,7 +13,7 @@ Simulation done in C++ with results plotted in Python (No technical reason just 
 
 ---
 
-### Spring Potential (Static) Test:
+### Spring Potential (Static) Test (springpotential.cpp):
 
 $$F = -kx, \hspace{1cm}\phi = \frac{1}{2}kx^2.$$
 
