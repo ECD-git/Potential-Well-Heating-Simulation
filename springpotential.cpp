@@ -31,13 +31,15 @@ float E_Kel_Conv(float E)
     return E/(1.380649*pow(10, -23));
 }
 
-// Particle definitions and initials
-float K_i = 0.001; // kelvin
-float v_0 = Vel_Conv(Kel_E_Conv(K_i)); //[m/s] // 4ms corresponds to about 1 milikelvin
-float x_0 = 0; //[m] //particle starts at far left side 
-// well definitions 
-float wellLength = 0.25; //[m]
+// well definitions (rough area the particle is confined to)
+float wellLength = -0.25; //[m]
 float wellDepth = 0.5; // [kelvin]
+
+// Particle definitions and initials
+float K_i = 0.000; // kelvin
+float v_0 = Vel_Conv(Kel_E_Conv(K_i)); //[m/s] // 4ms corresponds to about 1 milikelvin
+float x_0 = wellLength; //[m] //particle starts at far left side 
+
 // bump consts
 float bumpAmp = 0.0005; // [kelvin]
 float bumpLength = 0.05; //[m]
@@ -102,7 +104,7 @@ float Pendulum_Force(float x)
     Offset by half the length of the well so its centered
     this potential is also symmetric -> periodic conditions
     */
-   return -1*springK*(x-(wellLength*0.5));
+   return -1*springK*(x);
 }
 float Pendulum_Potential(float x)
 {
@@ -110,7 +112,7 @@ float Pendulum_Potential(float x)
     Potential ver of Pendulum_Force
     In case I need it, will be removed if obselete in final ver
     */
-   return 0.5*springK*pow(x-(wellLength*0.5),2);
+   return 0.5*springK*pow(x,2);
 }
 
 // MAIN
@@ -134,13 +136,6 @@ int main()
     float v_i = V[i-1] + A[i-1]*timeStep;
     V.push_back(v_i);
     float x_i = X[i-1] + V[i]*timeStep;
-    // check if out of bounds and loop back around
-    // THIS IS ASSUMING SYMMETRIC POTENTIAL
-    if(x_i >= wellLength)
-    {
-        x_i = x_i - wellLength;
-        result<<"Bounce Back ";
-    }
     X.push_back(x_i);
     float a_i = Pendulum_Force(X[i])/M;
     A.push_back(a_i);
