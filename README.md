@@ -13,7 +13,7 @@ Simulation done in C++ with results plotted in Python (No technical reason just 
 
 ---
 
-### Spring Potential (Static) Test (springpotential.cpp):
+### Spring Potential (Static) Test:
 
 $$F = -kx, \hspace{1cm}\phi = \frac{1}{2}kx^2.$$
 
@@ -24,4 +24,7 @@ Shows energy conservation, oscillating back and forth over a potential proportio
 
 ---
 
-### Standing Wave Potential, Flickered On and Off
+### Constant potential, switched on and off at a constant rate
+
+Analogous to a top hat function of potential, KE increases exponentially over time:
+![[PeriodicTopHat.png]]
