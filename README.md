@@ -18,8 +18,10 @@ Simulation done in C++ with results plotted in Python (No technical reason just 
 $$F = -kx, \hspace{1cm}\phi = \frac{1}{2}kx^2.$$
 
 Resulting kinetic energy graph and $\Delta t = 0.0001\text{s}$ and $T = 1\text{s}$, for a particle with no initial velocity at $x_i = -0.25\text{m}$.
-![[SpringPotentialStatic-1second-0.0001.png]]
-![image](https://github.com/ECD-git/Potential-Heating-Simulation/blob/main/Figures%2011%3A3%3A26/F%3D-kx.png)
+![[F=-kx.png]]
+![image|576](https://github.com/ECD-git/Potential-Heating-Simulation/blob/main/Figures%2011%3A3%3A26/F%3D-kx.png)
 Shows energy conservation, oscillating back and forth over a potential proportional to $x^2$.
 
 ---
+
+### Standing Wave Potential, Flickered On and Off
