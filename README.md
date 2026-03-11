@@ -28,3 +28,6 @@ Shows energy conservation, oscillating back and forth over a potential proportio
 
 Analogous to a top hat function of potential, KE increases exponentially over time:
 ![[PeriodicTopHat.png]]
+![image|576](https://github.com/ECD-git/Potential-Heating-Simulation/blob/main/Figures%2011%3A3%3A26/PeriodicTopHat.png)
+
+---
