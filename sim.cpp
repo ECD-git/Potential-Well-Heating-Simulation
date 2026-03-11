@@ -46,10 +46,10 @@ float springPEMax = 0.0005; // Kelvin, this is the max value of the potential in
 float springK = 2*Kel_E_Conv(springPEMax)/pow(x_0/2,2); // [N/m]  
 
 // Standing wave values
-float A_0 = 0.0005; // kelvin, AMPLITUDE of FORCE
-float lambda = 500 * pow(10,-9); // typical light wavelength
-float tau_On = 0.001; // tuned so we get about 10 time steps with the force on
-float k = M_PI/(k*v_0);
+float standingPEMax = 0.0005; // Kelvin
+float lambda = 500 * pow(10,-9); // [m] typical light wavelength
+float tau_On = 0.001; // [s] tuned so we get about 10 time steps with the force on
+float k = M_PI/(tau_On*v_0);
 // make tau_Off some random variable in the scale tau_On;
 
 // vectors for storing positions and velocity
@@ -79,15 +79,29 @@ float Pendulum_Potential(float x)
     */
    return 0.5*springK*pow(x,2);
 }
-float Standing_Force(float x)
+float Standing_Force(float x, bool on)
 {
     // force of standing wave implementing force on particle, tuned to A_0
-    return A_0 * std::sin(2*k*x);
+    if (on == 1)
+    {
+        return Kel_E_Conv(standingPEMax) * k; //* std::sin(2*k*x);
+    }
+    else
+    {
+        return 0;
+    }
 }
-float Standing_Potential(float x)
+float Standing_Potential(float x, bool on)
 {
     // potential of a standing wave implementing a force on our particle
-    return (A_0/k) * std::sin(2*k*x);
+    if (on == 1)
+    {
+        return Kel_E_Conv(standingPEMax) * std::cos(k*x);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 // function to grab the potential at any time t or position x
@@ -99,14 +113,28 @@ int main()
     // open results file
     std::ofstream result;
     result.open("results.dat");
+    std::ofstream walk;
+    walk.open("walk.dat");
 
     // define i=0 positions from initials
+    bool PE_on = true; // potential is initially on
+    float cooldown; // a cooldown timer for switching the potential on/off
+    if (PE_on==1)
+    {
+        cooldown = tau_On;
+    }
+    else
+    {
+        cooldown = tau_On;
+    }
     X.push_back(x_0);
     V.push_back(v_0);
-    A.push_back(Pendulum_Force(X[0])/M);
+    A.push_back(Standing_Force(X[0], PE_on)/M);
+    cooldown -= timeStep;
 
     // push initial time and KE
     result<<0<<','<<E_Kel_Conv(KE_Conv(V[0]))<<'\n';
+    walk<<0<<','<<V[0]*M<<'\n';
 
     for (int i=1; i<N_t; i++)
     {
@@ -115,14 +143,32 @@ int main()
     V.push_back(v_i);
     float x_i = X[i-1] + V[i]*timeStep;
     X.push_back(x_i);
-    float a_i = Pendulum_Force(X[i])/M;
+    if(cooldown <= 0)
+    {
+        if(PE_on==1)
+        {
+            PE_on = false;
+            cooldown = tau_On; // GET RANDOM TAU OFF HERE
+            walk<<i*timeStep<<','<<V[i]*M<<'\n';
+        }
+        else 
+        {
+            PE_on = true;
+            cooldown = tau_On;
+        }
+    }
+    float a_i = Standing_Force(X[0], PE_on)/M;
+    //std::cout<<a_i<<','<<PE_on<<std::endl;
+    std::cout<<k<<std::endl;
     A.push_back(a_i);
+    cooldown -= timeStep;
 
     // push back resulting ke and time from this step
     result<<i*timeStep<<','<<E_Kel_Conv(KE_Conv(V[i]))<<'\n';
     }
 
     result.close();
+    walk.close();
     std::cout<<"EXECUTE SUCESSFUL";
     return 0;
 }
