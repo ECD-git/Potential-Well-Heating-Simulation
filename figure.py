@@ -9,19 +9,15 @@ def ReadFile(name):
 
 # PLOT RESULTS
 data = ReadFile(os.getcwd() + "/results.dat")
-walk = ReadFile(os.getcwd() + "/walk.dat")
 
 
-Fig, axs = pplot.subplots(2)
+Fig, axs = pplot.subplots(1)
 Fig.set_size_inches((10,7))
-Fig.suptitle("Standing Wave, Switched at Const Freq, $K_i = 0.001$, $x_i = 0m$, $A_0 = 0.0005K$, $k=773.291m^{-1}$")
+Fig.suptitle("$F=-kx$ potential, $K_i = 0k$, $x_i = -0.25m$, $A_0 = 0.0005K$")
 
-axs[0].plot(data[:,0], data[:,1])
-axs[0].set(ylabel="Particle KE [k]")
-axs[0].set_title("Particle Kinetic Energy")
-
-axs[1].plot(walk[:,0], walk[:,1])
-axs[1].set(xlabel="Time [s]", ylabel="Particle Momentum [kgm$^{-1}$]")
-axs[1].set_title("Particle Momentum")
+axs.plot(data[:,0], data[:,1])
+axs.set(ylabel="Particle KE [k]")
+axs.set_title("Particle Kinetic Energy")
+axs.set(xlabel="Time [s]", ylabel="$\Delta$p [kgm$^{-1}$]")
 
 pplot.show()
