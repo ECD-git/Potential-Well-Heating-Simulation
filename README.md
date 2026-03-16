@@ -31,3 +31,9 @@ Analogous to a top hat function of potential, KE increases exponentially over ti
 ![image|576](https://github.com/ECD-git/Potential-Heating-Simulation/blob/main/Figures%2011%3A3%3A26/PeriodicTopHat.png)
 
 ---
+
+### Harmonic Oscillator, Total Energy after N oscillations for different time step
+
+Using the same spring potential above, running for about 1000 oscillations for many different time steps, and getting the total energy (kinetic plus potential) at the last time step in each case. A test of how time step effects the accuracy of the Symplectic leapfrog algorithm. Unfortunately the harmonic oscillator potential is too simple for this test and provided no difference in total energy over 6 orders of magnitude on time step for 1000 oscillations.
+
+![image|576](https://github.com/ECD-git/Potential-Heating-Simulation/blob/main/Figures%2016%3A3%3A26/HarmOscDeltEtot.png)
